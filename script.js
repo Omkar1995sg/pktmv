@@ -8,7 +8,7 @@ function openModal(id) {
 }
 
 function loadEventsFromExcel() {
-    fetch('https://raw.githubusercontent.com/poojakore0606/eventattmv/main/events.xlsx')
+    fetch('https://raw.githubusercontent.com/Omkar1995sg/pktmv/main/events.xlsx')
     .then(res => res.arrayBuffer())
     .then(data => {
         const workbook = XLSX.read(data, { type: 'array' });
