@@ -1,4 +1,4 @@
-
+<script>
 function closeModal(id) {
     document.getElementById(id).style.display = 'none';
 }
@@ -15,16 +15,40 @@ function loadEventsFromExcel() {
         const sheet = workbook.Sheets['Events'];
         const events = XLSX.utils.sheet_to_json(sheet);
         const container = document.getElementById('eventCards');
+        container.innerHTML = ""; // clear previous content if any
+
         events.forEach(event => {
+            let eventDate = event['Date'];
+
+            // ✅ Convert Excel serial number to readable date
+            if (typeof eventDate === 'number') {
+                eventDate = new Date((eventDate - 25569) * 86400 * 1000);
+                eventDate = eventDate.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }); // Example: "31 Oct 2025"
+            }
+
+            // Optional: handle if Excel already stores text date
+            if (typeof eventDate === 'string' && !isNaN(Date.parse(eventDate))) {
+                const parsedDate = new Date(eventDate);
+                eventDate = parsedDate.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            }
+
             const card = document.createElement('div');
             card.className = 'event';
             card.innerHTML = `
                 <h4>${event['Event Name']}</h4>
-                <p>Date: ${event['Date']}</p>
+                <p>Date: ${eventDate}</p>
                 <p>Location: ${event['Location']}</p>
                 <p>Time: ${event['Time']}</p>
                 <p>Speaker: ${event['Speaker']}</p>
-                <button onclick="showRegister('${event['Event Name']}', '${event['Date']}')">Register</button>
+                <button onclick="showRegister('${event['Event Name']}', '${eventDate}')">Register</button>
             `;
             container.appendChild(card);
         });
@@ -69,3 +93,4 @@ document.getElementById('registrationForm').addEventListener('submit', function(
 });
 
 window.onload = loadEventsFromExcel;
+</script>
